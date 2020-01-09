@@ -1,0 +1,28 @@
+---
+- hosts: k8snodes
+  become: true
+  tasks:
+    - name: Reset Cluster
+      command: "{{ item }}"
+      with_items:
+        - kubeadm reset -f
+        - rm -fr /root/.kube
+
+    - name: Collect short hostname
+      shell: echo "{{inventory_hostname}}"|awk -F . '{print $1}'
+      register: shortname
+
+    - name: Sync join_command to node
+      copy: 
+        src: ./join-command
+        dest: /tmp/join-command
+        owner: root
+        group: root
+        mode: '0700'
+
+    - name: Collect join_command
+      shell: cat /tmp/join-command
+      register: joincmd
+
+    - name: Join cluster with token in join_command
+      command: bash -c "{{ joincmd.stdout_lines[0] }} --node-name {{ shortname.stdout_lines[0] }}"

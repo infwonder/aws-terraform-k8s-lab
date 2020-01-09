@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Reset Cluster
+      command: "{{ item }}"
+      with_items:
+        - kubeadm reset -f
+        - rm -fr /root/.kube
+
+    - name: Remove old KUBECONFIG
+      become: false
+      local_action: command rm -fr /home/jasonlin/.kube
+
+    - name: Remove local KUBECONFIG
+      become: false
+      local_action: command rm -fr ./kubeconfig
+
+    - name: Remove local join-command
+      become: false
+      local_action: command rm -fr join-command

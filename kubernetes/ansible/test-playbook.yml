@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: test hostname
+      shell: echo "{{ansible_default_ipv4.address}} has the name of {{inventory_hostname}}"
+
+    - name: get short hostname
+      shell: echo "{{inventory_hostname}}"|awk -F . '{print $1}'
+      register: shortname
+
+    - name: get from registered
+      command: echo "my short hostname is {{shortname.stdout_lines[0]}}"

@@ -1,0 +1,43 @@
+---
+- hosts: k8smaster
+  become: true
+  tasks:
+  - name: Reset Cluster
+    command: "{{ item }}"
+    with_items:
+      - kubeadm reset -f
+      - rm -fr /root/.kube
+
+#  - name: Collect k8smaster public IPv4 address
+#    shell: host {{ inventory_hostname }}|grep -o -E "[0-9.]+{4}"
+#    register: publicIp
+
+  - name: Initialize the Kubernetes cluster using kubeadm
+    command: kubeadm init --pod-network-cidr=10.244.0.0/16 --node-name k8smaster --apiserver-cert-extra-sans={{ inventory_hostname }}
+
+  - name: Install vxlan-flannel pod network
+    command: kubectl apply -f https://docs.projectcalico.org/v3.10/getting-started/kubernetes/installation/hosted/canal/canal.yaml
+    environment: 
+      KUBECONFIG: /etc/kubernetes/admin.conf
+
+  - name: Generate join command
+    command: kubeadm token create --print-join-command
+    register: join_command
+
+  - name: Copy join command to local file
+    become: false
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+
+  - name: Fetch admin.conf to host
+    fetch: 
+      src: /etc/kubernetes/admin.conf
+      dest: ./kubeconfig/
+      flat: true
+
+  - name: Install and enable host kubectl with proper KUBECONFIG
+    become: false
+    command: "{{ item }}"
+    with_items:
+      - mkdir -p /home/vagrant/.kube
+      - cp -v ./kubeconfig/admin.conf /home/vagrant/.kube/admin.conf
+    delegate_to: 127.0.0.1
