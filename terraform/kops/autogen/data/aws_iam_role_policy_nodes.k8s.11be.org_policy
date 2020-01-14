@@ -1,0 +1,58 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeRegions"
+      ],
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:GetEncryptionConfiguration",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::kops-states-8635c5dc"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/addons/*",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/cluster.spec",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/config",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/instancegroup/*",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/pki/issued/*",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/pki/private/kube-proxy/*",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/pki/private/kubelet/*",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/pki/ssh/*",
+        "arn:aws:s3:::kops-states-8635c5dc/k8s.11be.org/secrets/dockerconfig"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:BatchGetImage"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
