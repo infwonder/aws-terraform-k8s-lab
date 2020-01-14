@@ -4,3 +4,4 @@
 */.terraform
 */*.terraform
 */mykey*
+.terraform
